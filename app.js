@@ -5,7 +5,8 @@ const app = express();
 app.set('view engine', 'ejs');
 app.set('views', './views');
 app.use(express.static('public'));
-
+const users = {
+};
 app.use(express.urlencoded({ extended: true}));
 app.use(session({
     secret: 'my-secret-key',
@@ -33,9 +34,10 @@ app.get('/login', (req, res) => {
 app.post('/login', (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
-    if (username === 'diash' && password === '1234') {
+    if (users[username] && users[username] === password) {
         req.session.username = username;
         res.redirect('/');
+    
     } else {
         res.send('Invalid username or password');
     }
@@ -47,6 +49,23 @@ app.get('/logout', (req, res) => {
         res.redirect('/login');
     });
 });
+
+app.get('/register', (req, res) => {
+    res.render('register');
+});
+
+
+app.post('/register', (req, res) => {
+    const username = req.body.username;
+    const password = req.body.password;
+    if (users[username]) {
+        res.send('Username already exists.');
+    } else {
+        users[username] = password;
+        res.redirect('/login');
+    }
+});
+
 
 app.listen(3000, () => {
     console.log('Server running on port 3000');
