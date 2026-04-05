@@ -15,38 +15,37 @@ app.use(session({
 
 app.get('/', (req, res) => {
     if (req.session.username) {
-        res.render('home', {name:  req.session.username});
+        res.render('home', {name: req.session.username});
     } 
     else {
         res.redirect('/login');
     }
-});   
-    
-
+});
 
 app.get('/about', (req, res) => {
     res.send('This is the about page');
 });
 
-app.get('/login', (req,res) => {
+app.get('/login', (req, res) => {
     res.render('login');
 });
 
 app.post('/login', (req, res) => {
-    const  username  = req.body.username
-    const password = req.body.password
+    const username = req.body.username;
+    const password = req.body.password;
     if (username === 'diash' && password === '1234') {
         req.session.username = username;
-        res.redirect('/')
-    }
-    else {
+        res.redirect('/');
+    } else {
         res.send('Invalid username or password');
     }
 });
 
 app.get('/logout', (req, res) => {
-    res.session.destroy();
-    res.redirect('/login');
+    req.session.destroy((err) => {
+        if (err) console.log(err);
+        res.redirect('/login');
+    });
 });
 
 app.listen(3000, () => {
